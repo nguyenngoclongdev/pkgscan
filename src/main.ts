@@ -1,37 +1,51 @@
 import { existsSync } from 'fs';
-import { posix } from 'path';
+import path from 'path/posix';
 import { PackageManager } from './package-manager/PackageManager';
 import { NpmModule } from './package-manager/modules/npm';
 import { PnpmModule } from './package-manager/modules/pnpm';
 import { YarnModule } from './package-manager/modules/yarn';
+import { logger } from './utils/logger';
 
-// Current working directory
-export const root: string = process.cwd();
+export const autodetectPackageManager = (cwd: string | undefined): PackageManager | undefined => {
+    let currentWorkingDir = cwd;
+    if (!currentWorkingDir) {
+        currentWorkingDir = process.cwd();
+    }
 
-export const autodetectPackageManager = (): PackageManager | undefined => {
-    const npmLockFile = posix.join(root, NpmModule.getLockFile());
+    const npmLockFileName = 'package-lock.json';
+    const npmLockFile = currentWorkingDir.endsWith(npmLockFileName)
+        ? currentWorkingDir
+        : path.join(currentWorkingDir, npmLockFileName);
     if (existsSync(npmLockFile)) {
         return new NpmModule(npmLockFile);
     }
 
-    const pnpmLockFile = posix.join(root, PnpmModule.getLockFile());
+    const pnpmLockFileName = 'pnpm-lock.yaml';
+    const pnpmLockFile = currentWorkingDir.endsWith(pnpmLockFileName)
+        ? currentWorkingDir
+        : path.join(currentWorkingDir, pnpmLockFileName);
     if (existsSync(pnpmLockFile)) {
         return new PnpmModule(pnpmLockFile);
     }
 
-    const yarnLockFile = posix.join(root, YarnModule.getLockFile());
+    const yarnLockFileName = 'yarn.lock';
+    const yarnLockFile = currentWorkingDir.endsWith(yarnLockFileName)
+        ? currentWorkingDir
+        : path.join(currentWorkingDir, yarnLockFileName);
     if (existsSync(yarnLockFile)) {
         return new YarnModule(yarnLockFile);
     }
     return undefined;
 };
 
-export const findInstalledPackage = async (packageName: string): Promise<any> => {
-    const packageManager = autodetectPackageManager();
+export const findInstalledPackage = async (packageName: string, cwd?: string): Promise<any> => {
+    const packageManager = autodetectPackageManager(cwd);
     if (!packageManager) {
-        console.log('Could not detect any package manager use on this project.');
+        logger.warn('Could not detect any package manager use on this project.');
+        return;
     }
 
+    logger.info(`Analyze package manager at the ${packageManager.lockFilePath}...`);
     const installedPackage = await packageManager?.getInstalledPackage(packageName);
     return installedPackage;
 };

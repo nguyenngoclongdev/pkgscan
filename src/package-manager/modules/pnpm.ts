@@ -1,23 +1,34 @@
 import { readFileSync } from 'fs';
 import yaml from 'js-yaml';
-import { PackageManager } from '../PackageManager';
+import { PackageInfo, PackageManager } from '../PackageManager';
 
 export class PnpmModule implements PackageManager {
-    private lockPath: string;
-    constructor(rootPath: string) {
-        this.lockPath = rootPath;
+    public readonly lockFilePath: string;
+    constructor(lockFilePath: string) {
+        this.lockFilePath = lockFilePath;
     }
-
-    static getLockFile = () => {
-        return 'pnpm-lock.yaml';
-    };
 
     private match = (installedPackage: string, packageNameFinding: string) => {
         return installedPackage.startsWith(`/${packageNameFinding}@`);
     };
 
-    async getInstalledPackage(packageNameFinding: string): Promise<any> {
-        const lockFileContent = readFileSync(this.lockPath, { encoding: 'utf-8' });
+    private getPackageName = (text: string): string => {
+        const packageName = text.replace('/', '');
+        return packageName.split('@')[0];
+    };
+
+    private transform = (text: string, detail: any): PackageInfo => {
+        return {
+            name: this.getPackageName(text),
+            version: detail.version,
+            engines: detail.engines,
+            hasBin: detail.hasBin,
+            dev: detail.dev
+        };
+    };
+
+    async getInstalledPackage(packageNameFinding: string): Promise<PackageInfo[]> {
+        const lockFileContent = readFileSync(this.lockFilePath, { encoding: 'utf-8' });
         const installedPackages = (yaml.load(lockFileContent) as any).packages;
         for (const pkg in installedPackages) {
             let version = pkg.match(/\d+(\.\d+)+/);
@@ -28,11 +39,6 @@ export class PnpmModule implements PackageManager {
 
         return Object.entries(installedPackages)
             .filter(([installedPackage]) => this.match(installedPackage, packageNameFinding))
-            .map((values) => {
-                return {
-                    name: values[0],
-                    detail: JSON.stringify(values[1], null, 2)
-                };
-            });
+            .map((values) => this.transform(values[0], values[1]));
     }
 }

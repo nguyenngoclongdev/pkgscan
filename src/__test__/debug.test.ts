@@ -1,4 +1,5 @@
 import { findInstalledPackage } from '../main';
+import { logger } from '../utils/logger';
 
 describe('Test Gherkin Code Parse', () => {
     const cypressCases = [
@@ -9,6 +10,6 @@ describe('Test Gherkin Code Parse', () => {
     test.each(cypressCases)('Test', (lockPath: string, findPackage: string, expectVersion: string) => {
         // Mock root path = lockPath
         const info = findInstalledPackage(findPackage);
-        console.log('🚀 ~ info:', info);
+        logger.info('🚀 ~ info:', info);
     });
 });

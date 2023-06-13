@@ -1,43 +1,41 @@
+#! /usr/bin/env node
 import colors from 'ansi-colors';
-import { createSpinner } from 'nanospinner';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { findInstalledPackage } from '../main.js';
+import { logger } from '../utils/logger.js';
 
 const run = async (argv: ArgvType) => {
-    const { pkg = '' } = argv;
-    const spinner = createSpinner('Detect the package').start({ color: 'yellow' });
+    const { pkg = '', cwd = '' } = argv;
     try {
-        const installedPackageFound = await findInstalledPackage(pkg);
+        const installedPackageFound = await findInstalledPackage(pkg, cwd);
         if (!installedPackageFound) {
-            spinner.warn({ text: 'Could not found package.', mark: ':|' });
+            logger.warn('Could not found package.');
             return;
         }
 
-        spinner.success({ text: `Found installed package: ${pkg}` });
-        console.log(installedPackageFound);
+        logger.info(`Found installed package:`);
+        logger.table(installedPackageFound);
     } catch (error) {
-        spinner.error({ text: (error as any).message, mark: ':(' });
-    } finally {
-        spinner.stop();
+        logger.error((error as any).message);
     }
 };
 
 // Define arguments and run command
 const yargsInstance = yargs(hideBin(process.argv));
 const argv = yargsInstance
-    .usage(`Usage: ${colors.blue(colors.bold(`pnpm buff -- [options]`))}`)
+    .usage(`Usage: ${colors.blue(colors.bold(`pkgver -- [options]`))}`)
     .option('pkg', {
         alias: 'p',
         type: 'string',
         default: '',
         description: colors.dim('The package name.')
     })
-    .option('lock-path', {
-        alias: 'l',
+    .option('cwd', {
+        alias: 'c',
         type: 'string',
-        default: '',
-        description: colors.dim('The lock file path. (e.g. npm, yarn, vsm, vsx)')
+        default: `${process.cwd()}`,
+        description: colors.dim('Current working directory')
     })
     .option('limit', {
         alias: 'd',
@@ -63,7 +61,7 @@ const argv = yargsInstance
 // Execute main
 export type ArgvType = {
     pkg: string;
-    lockPath: string;
+    cwd: string;
     limit: number;
     debug: boolean;
 };

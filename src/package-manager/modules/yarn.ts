@@ -1,27 +1,37 @@
-import yarn from '@yarnpkg/lockfile';
+import { parse } from '@yarnpkg/lockfile';
 import { readFileSync } from 'fs';
-import { PackageManager } from '../PackageManager';
+import { PackageInfo, PackageManager } from '../PackageManager';
 
 export class YarnModule implements PackageManager {
-    private lockPath: string;
-    constructor(rootPath: string) {
-        this.lockPath = rootPath;
+    public readonly lockFilePath: string;
+    constructor(lockFilePath: string) {
+        this.lockFilePath = lockFilePath;
     }
-
-    static getLockFile = () => {
-        return 'yarn.lock';
-    };
 
     private match = (installedPackage: string, packageNameFinding: string) => {
         return installedPackage.startsWith(`${packageNameFinding}@`);
     };
 
-    async getInstalledPackage(packageNameFinding: string): Promise<any> {
-        const lockFileContent = readFileSync(this.lockPath, { encoding: 'utf-8' });
-        const installedPackages = yarn.parse(lockFileContent).object;
+    private getPackageName = (text: string): string => {
+        const packageName = text.replace('/', '');
+        return packageName.split('@')[0];
+    };
 
-        return Object.entries(installedPackages).find(([installedPackage]) =>
+    private transform = (text: string, detail: any): PackageInfo => {
+        return {
+            name: this.getPackageName(text),
+            version: detail.version,
+            resolved: detail.resolved
+        };
+    };
+
+    async getInstalledPackage(packageNameFinding: string): Promise<PackageInfo[]> {
+        const lockFileContent = readFileSync(this.lockFilePath, { encoding: 'utf-8' });
+        const installedPackages = parse(lockFileContent).object;
+
+        const packages = Object.entries(installedPackages).filter(([installedPackage]) =>
             this.match(installedPackage, packageNameFinding)
-        )?.[1];
+        );
+        return packages.map((p) => this.transform(p[0], p[1]));
     }
 }
