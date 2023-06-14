@@ -24,7 +24,7 @@ const run = async (argv: ArgvType) => {
 // Define arguments and run command
 const yargsInstance = yargs(hideBin(process.argv));
 const argv = yargsInstance
-    .usage(`Usage: ${colors.blue(colors.bold(`pkgver -- [options]`))}`)
+    .usage(`Usage: ${colors.blue(colors.bold(`pkgscan -- [options]`))}`)
     .option('pkg', {
         alias: 'p',
         type: 'string',

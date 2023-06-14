@@ -1,19 +1,19 @@
 {
-    "name": "package-versions",
-    "displayName": "package-versions",
-    "description": "Get installed packages version, support nom, yarn, pnpm.",
+    "name": "pkgscan",
+    "displayName": "pkgscan - Package Scan",
+    "description": "Retrieve information on installed packages across npm, pnpm and yarn",
     "version": "1.0.0",
     "main": "./dist/index.js",
     "bin": {
-        "pkgver": "./dist/cli/index.js"
+        "pkgscan": "./dist/cli/index.js"
     },
     "private": false,
     "repository": {
         "type": "git",
-        "url": "https://github.com/nguyenngoclongdev/vscode-fs-browserify"
+        "url": "https://github.com/nguyenngoclongdev/pkgscan"
     },
     "bugs": {
-        "url": "https://github.com/nguyenngoclongdev/vscode-fs-browserify/issues"
+        "url": "https://github.com/nguyenngoclongdev/pkgscan/issues"
     },
     "sponsor": {
         "url": "https://ko-fi.com/nguyenngoclong"
@@ -27,15 +27,20 @@
         "Other"
     ],
     "keywords": [
+        "find",
+        "search",
+        "scan",
+        "installed",
+        "package",
         "npm",
-        "yarn",
-        "pnpm",
-        "composer",
-        "dependency",
-        "manager",
-        "package hints",
+        "lockfile",
         "package.json",
-        "composer.json"
+        "yarn",
+        "yarn.lock",
+        "pnpm",
+        "pnpm-lock.yaml",
+        "dependencies",
+        "devDependencies"
     ],
     "scripts": {
         "esbuild-base": "esbuild ./src/index.ts ./src/cli/index.ts --bundle --outdir=dist --platform=node",

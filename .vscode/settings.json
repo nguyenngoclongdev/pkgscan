@@ -30,7 +30,7 @@
         "nodenext",
         "outdir",
         "outfile",
-        "pkgver",
+        "pkgscan",
         "yarnlockfile"
     ]
 }
