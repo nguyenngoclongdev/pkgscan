@@ -43,9 +43,8 @@ export class NpmModule implements PackageManager {
         }
 
         // Find the package
-        const packages = Object.entries(allDependencies).filter(([installedPackage]) =>
-            this.match(installedPackage, packageNameFinding)
-        );
-        return packages.map((p) => this.transform(p[0], p[1]));
+        return Object.entries(allDependencies)
+            .filter(([installedPackage]) => this.match(installedPackage, packageNameFinding))
+            .map((p) => this.transform(p[0], p[1]));
     }
 }

@@ -29,6 +29,8 @@ export class PnpmModule implements PackageManager {
 
     async getInstalledPackage(packageNameFinding: string): Promise<PackageInfo[]> {
         const lockFileContent = readFileSync(this.lockFilePath, { encoding: 'utf-8' });
+
+        // Get all dependencies
         const installedPackages = (yaml.load(lockFileContent) as any).packages;
         for (const pkg in installedPackages) {
             let version = pkg.match(/\d+(\.\d+)+/);
@@ -37,6 +39,7 @@ export class PnpmModule implements PackageManager {
             }
         }
 
+        // Find the package
         return Object.entries(installedPackages)
             .filter(([installedPackage]) => this.match(installedPackage, packageNameFinding))
             .map((values) => this.transform(values[0], values[1]));

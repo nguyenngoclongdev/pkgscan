@@ -27,11 +27,13 @@ export class YarnModule implements PackageManager {
 
     async getInstalledPackage(packageNameFinding: string): Promise<PackageInfo[]> {
         const lockFileContent = readFileSync(this.lockFilePath, { encoding: 'utf-8' });
+
+        // Get all dependencies
         const installedPackages = parse(lockFileContent).object;
 
-        const packages = Object.entries(installedPackages).filter(([installedPackage]) =>
-            this.match(installedPackage, packageNameFinding)
-        );
-        return packages.map((p) => this.transform(packageNameFinding, p[0], p[1]));
+        // Find the package
+        return Object.entries(installedPackages)
+            .filter(([installedPackage]) => this.match(installedPackage, packageNameFinding))
+            .map((p) => this.transform(packageNameFinding, p[0], p[1]));
     }
 }
