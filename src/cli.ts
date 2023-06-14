@@ -17,21 +17,23 @@ const main = async (argv: ArgvType) => {
         // Detect the package manager based on the current working directory.
         const packageManager = getPackageManager(cwd);
         if (!packageManager) {
-            logger.warn('Unable to detect any package manager.');
+            logger.warn(`Unable to detect a package manager at ${cwd}.`);
             return;
         }
 
         // Retrieve information about the installed package.
+        logger.info(`Analyzing the package manager ${packageManager.lockFilePath}...`);
         const installedPackageFound = await packageManager.getInstalledPackage(pkg);
         if (!installedPackageFound || installedPackageFound.length <= 0) {
             logger.warn('The requested package was not found.');
             return;
         }
 
-        logger.info(`Found installed package:`);
+        logger.success(`Installed package found:`);
         logger.table(installedPackageFound);
     } catch (error) {
-        logger.error((error as any).message);
+        const message = (error as any).message;
+        logger.error('Oops, something went wrong.', message);
     }
 };
 

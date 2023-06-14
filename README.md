@@ -50,7 +50,7 @@ Options:
 pkgscan --pkg typescript
 
 # Get details about the installed package with a user-specified package manager.
-pkgscan --pkg typescript --cwd ./pnpm-lock.yaml
+pkgscan --pkg typescript --cwd ./project-directory-path
 ```
 
 ## API

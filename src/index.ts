@@ -19,7 +19,7 @@ export const getInstalledPackageDetails = async (
     // Detect the package manager based on the current working directory.
     const packageManager = getPackageManager(cwd || process.cwd());
     if (!packageManager) {
-        throw Error('Unable to detect any package manager.');
+        throw Error(`Unable to detect a package manager at ${cwd}.`);
     }
 
     // Retrieve information about the installed package.
