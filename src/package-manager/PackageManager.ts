@@ -6,5 +6,5 @@ export interface PackageInfo {
 
 export interface PackageManager {
     lockFilePath: string;
-    getInstalledPackage(packageName: string): Promise<any>;
+    getInstalledPackage(packageName: string): Promise<PackageInfo[]>;
 }

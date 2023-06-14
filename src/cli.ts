@@ -1,16 +1,30 @@
 #! /usr/bin/env node
 import colors from 'ansi-colors';
+import { EOL } from 'os';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { findInstalledPackage } from '../main.js';
-import { logger } from '../utils/logger.js';
+import { getPackageManager } from './utils/getPackageManager.js';
+import { logger } from './utils/logger.js';
 
-const run = async (argv: ArgvType) => {
-    const { pkg = '', cwd = '' } = argv;
+const main = async (argv: ArgvType) => {
+    const { pkg, cwd = process.cwd() } = argv;
+    if (!pkg) {
+        logger.warn('The package name provided is null or empty.');
+        return;
+    }
+
     try {
-        const installedPackageFound = await findInstalledPackage(pkg, cwd);
-        if (!installedPackageFound) {
-            logger.warn('Could not found package.');
+        // Detect the package manager based on the current working directory.
+        const packageManager = getPackageManager(cwd);
+        if (!packageManager) {
+            logger.warn('Unable to detect any package manager.');
+            return;
+        }
+
+        // Retrieve information about the installed package.
+        const installedPackageFound = await packageManager.getInstalledPackage(pkg);
+        if (!installedPackageFound || installedPackageFound.length <= 0) {
+            logger.warn('The requested package was not found.');
             return;
         }
 
@@ -24,24 +38,19 @@ const run = async (argv: ArgvType) => {
 // Define arguments and run command
 const yargsInstance = yargs(hideBin(process.argv));
 const argv = yargsInstance
-    .usage(`Usage: ${colors.blue(colors.bold(`pkgscan -- [options]`))}`)
+    .usage(`${EOL}Usage: pkgscan [options]`)
     .option('pkg', {
         alias: 'p',
         type: 'string',
         default: '',
-        description: colors.dim('The package name.')
+        requiresArg: true,
+        description: colors.dim('The name of the package to retrieve information for.')
     })
     .option('cwd', {
         alias: 'c',
         type: 'string',
         default: `${process.cwd()}`,
-        description: colors.dim('Current working directory')
-    })
-    .option('limit', {
-        alias: 'd',
-        type: 'number',
-        default: 0,
-        description: colors.dim('The number of items to returned')
+        description: colors.dim('The current working directory of the project.')
     })
     .option('debug', {
         type: 'boolean',
@@ -62,7 +71,6 @@ const argv = yargsInstance
 export type ArgvType = {
     pkg: string;
     cwd: string;
-    limit: number;
     debug: boolean;
 };
-run(argv);
+main(argv);

@@ -32,28 +32,47 @@ npm install -g pkgscan
 
 ## CLI
 
-```sh
-Usage: pkgscan [options]
+### Usage
+
+```
+pkgscan [options]
 
 Options:
+  -p, --pkg    The name of the package to retrieve information for.
+  -c, --cwd    The current working directory of the project.
   -h, --help   Show help
-  -p, --pkg    The package name.
-  -c, --cwd    Current working directory
-  -d, --limit  The number of items to returned
+```
+
+### Examples
+
+```sh
+# Get details about the installed package with automatic package manager detection.
+pkgscan --pkg typescript
+
+# Get details about the installed package with a user-specified package manager.
+pkgscan --pkg typescript --cwd ./pnpm-lock.yaml
 ```
 
 ## API
 
 ```typescript
-import { findInstalledPackage } from 'pkgscan';
+import { getInstalledPackageDetails } from 'pkgscan';
 
-// Retrieve installed package info
-await findInstalledPackage('typescript');
+// Get details about the installed package with automatic package manager detection.
+const installedPackage = await getInstalledPackageDetails('typescript');
+console.log(installedPackage);
 
-// Find in other working directory
+// Get details about the installed package with a user-specified package manager.
 const cwd = __dirname;
-await findInstalledPackage('typescript', cwd);
+const installedPackage = await getInstalledPackageDetails('typescript', cwd);
+console.log(installedPackage);
 ```
+
+## Supported package managers:
+
+- [x] npm (lock file versions 1, 2, 3)
+- [x] pnpm (all versions of lock files)
+- [x] yarn (all versions of lock files)
 
 ## Feedback
 

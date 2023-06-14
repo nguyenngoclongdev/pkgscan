@@ -22,7 +22,7 @@ export class NpmModule implements PackageManager {
         };
     };
 
-    async getInstalledPackage(packageNameFinding: string): Promise<any> {
+    async getInstalledPackage(packageNameFinding: string): Promise<PackageInfo[]> {
         const lockFileContent = readFileSync(this.lockFilePath, { encoding: 'utf-8' });
         const packageLock = JSON.parse(lockFileContent);
 

@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "main": "./dist/index.js",
     "bin": {
-        "pkgscan": "./dist/cli/index.js"
+        "pkgscan": "./dist/cli.js"
     },
     "private": false,
     "repository": {
@@ -43,7 +43,7 @@
         "devDependencies"
     ],
     "scripts": {
-        "esbuild-base": "esbuild ./src/index.ts ./src/cli/index.ts --bundle --outdir=dist --platform=node",
+        "esbuild-base": "esbuild ./src/index.ts ./src/cli.ts --bundle --outdir=dist --platform=node",
         "build": "pnpm esbuild-base --sourcemap",
         "watch": "pnpm esbuild-base --sourcemap --watch",
         "lint": "eslint src --ext ts",
