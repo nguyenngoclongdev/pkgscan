@@ -17,9 +17,9 @@ export class YarnModule implements PackageManager {
         return packageName.split('@')[0];
     };
 
-    private transform = (text: string, detail: any): PackageInfo => {
+    private transform = (packageNameFinding: string, text: string, detail: any): PackageInfo => {
         return {
-            name: this.getPackageName(text),
+            name: this.getPackageName(text) || packageNameFinding,
             version: detail.version,
             resolved: detail.resolved
         };
@@ -32,6 +32,6 @@ export class YarnModule implements PackageManager {
         const packages = Object.entries(installedPackages).filter(([installedPackage]) =>
             this.match(installedPackage, packageNameFinding)
         );
-        return packages.map((p) => this.transform(p[0], p[1]));
+        return packages.map((p) => this.transform(packageNameFinding, p[0], p[1]));
     }
 }

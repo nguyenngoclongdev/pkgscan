@@ -1,26 +1,51 @@
 import { readFileSync } from 'fs';
-import { PackageManager } from '../PackageManager';
+import { PackageInfo, PackageManager } from '../PackageManager';
 
 export class NpmModule implements PackageManager {
-    private lockPath: string;
-    constructor(rootPath: string) {
-        this.lockPath = rootPath;
+    public readonly lockFilePath: string;
+    constructor(lockFilePath: string) {
+        this.lockFilePath = lockFilePath;
     }
 
-    static getLockFile = () => {
-        return 'package-lock.json';
+    private match = (installedPackage: string, packageNameFinding: string) => {
+        const installedPackageNoPrefix = installedPackage.replace('node_modules/', '');
+        return installedPackageNoPrefix.startsWith(`${packageNameFinding}`);
     };
 
-    private match = (installedPackage: string, packageNameFinding: string) => {
-        return installedPackage.startsWith(packageNameFinding);
+    private transform = (name: string, raw: any): PackageInfo => {
+        return {
+            name: name.replace('node_modules/', '').split('@')[0],
+            version: raw.version,
+            dev: raw.dev,
+            license: raw.license,
+            engines: raw.engines
+        };
     };
 
     async getInstalledPackage(packageNameFinding: string): Promise<any> {
-        const lockFileContent = readFileSync(this.lockPath, { encoding: 'utf-8' });
-        const installedPackages = JSON.parse(lockFileContent).dependencies;
+        const lockFileContent = readFileSync(this.lockFilePath, { encoding: 'utf-8' });
+        const packageLock = JSON.parse(lockFileContent);
 
-        return Object.entries(installedPackages).find(([installedPackage]) =>
+        // Get all dependencies
+        let allDependencies = [];
+        switch (packageLock.lockfileVersion) {
+            case 1:
+                allDependencies = packageLock.dependencies;
+                break;
+            case 2:
+                allDependencies = packageLock.packages || packageLock.dependencies;
+                break;
+            case 3:
+                allDependencies = packageLock.packages;
+                break;
+            default:
+                break;
+        }
+
+        // Find the package
+        const packages = Object.entries(allDependencies).filter(([installedPackage]) =>
             this.match(installedPackage, packageNameFinding)
-        )?.[1];
+        );
+        return packages.map((p) => this.transform(p[0], p[1]));
     }
 }
