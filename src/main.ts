@@ -1,6 +1,6 @@
 import { existsSync } from 'fs';
 import path from 'path/posix';
-import { PackageManager } from './package-manager/PackageManager';
+import { PackageInfo, PackageManager } from './package-manager/PackageManager';
 import { NpmModule } from './package-manager/modules/npm';
 import { PnpmModule } from './package-manager/modules/pnpm';
 import { YarnModule } from './package-manager/modules/yarn';
@@ -38,11 +38,11 @@ export const autodetectPackageManager = (cwd: string | undefined): PackageManage
     return undefined;
 };
 
-export const findInstalledPackage = async (packageName: string, cwd?: string): Promise<any> => {
+export const findInstalledPackage = async (packageName: string, cwd?: string): Promise<PackageInfo[] | undefined> => {
     const packageManager = autodetectPackageManager(cwd);
     if (!packageManager) {
         logger.warn('Could not detect any package manager use on this project.');
-        return;
+        return undefined;
     }
 
     logger.info(`Analyze package manager at the ${packageManager.lockFilePath}...`);
