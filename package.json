@@ -44,14 +44,14 @@
     ],
     "scripts": {
         "esbuild-base": "esbuild ./src/index.ts ./src/cli.ts --bundle --outdir=dist --platform=node",
-        "build": "pnpm esbuild-base --sourcemap",
+        "compile": "pnpm esbuild-base --sourcemap",
         "watch": "pnpm esbuild-base --sourcemap --watch",
         "lint": "eslint src --ext ts",
         "test": "jest",
         "gi": "npm install -g .",
         "types": "tsc --emitDeclarationOnly --declaration --declarationDir ./dist --skipLibCheck",
         "cs": "changeset",
-        "ci:build": "pnpm esbuild-base --minify && pnpm types",
+        "ci:compile": "pnpm esbuild-base --minify && pnpm types",
         "ci:publish": "changeset publish && git push --follow-tags"
     },
     "devDependencies": {
