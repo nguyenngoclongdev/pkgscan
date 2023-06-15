@@ -1,4 +1,3 @@
-[![CI](https://github.com/nguyenngoclongdev/pkgscan/actions/workflows/ci.yml/badge.svg)](https://github.com/nguyenngoclongdev/pkgscan/actions/workflows/ci.yml)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/nguyenngoclongdev/pkgscan/)
 
 [![npm version](https://img.shields.io/npm/v/pkgscan.svg?style=flat-square)](https://www.npmjs.org/package/pkgscan)
@@ -6,7 +5,6 @@
 [![install size](https://img.shields.io/badge/dynamic/json?url=https://packagephobia.com/v2/api.json?p=pkgscan&query=$.install.pretty&label=install%20size&style=flat-square)](https://packagephobia.now.sh/result?p=pkgscan)
 [![npm bundle size](https://img.shields.io/bundlephobia/minzip/pkgscan?style=flat-square)](https://bundlephobia.com/package/pkgscan@latest)
 [![npm downloads](https://img.shields.io/npm/dt/pkgscan.svg?style=flat-square)](https://npm-stat.com/charts.html?package=pkgscan)
-[![Known Vulnerabilities](https://snyk.io/test/npm/pkgscan/badge.svg)](https://snyk.io/test/npm/pkgscan)
 
 # pkgscan
 
