@@ -12,3 +12,5 @@ CHANGELOG.md
 README.md
 dist/__test__
 .vscode-test
+.gitignore
+.npmrc
