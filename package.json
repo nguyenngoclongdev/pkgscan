@@ -1,6 +1,6 @@
 {
     "name": "pkgscan",
-    "displayName": "pkgscan - Package Scan",
+    "displayName": "pkgscan - Installed Package Scan",
     "description": "Retrieve information on installed packages across npm, pnpm and yarn",
     "version": "0.0.0",
     "main": "./dist/index.js",
