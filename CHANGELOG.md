@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.1
+
+### Patch Changes
+
+- db0da5d: Release stable version and public source code
+
 ## 0.0.1
 
 ### Patch Changes
