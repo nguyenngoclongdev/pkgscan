@@ -14,3 +14,4 @@ dist/__test__
 .vscode-test
 .gitignore
 .npmrc
+images
