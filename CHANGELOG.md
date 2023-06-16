@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 0.0.1
+
+### Patch Changes
+
+- 85eb4ee: publish beta
+
 ## 1.0.4
 
 ### Patch Changes
