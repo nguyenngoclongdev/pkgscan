@@ -1,3 +1,4 @@
+[![CI](https://github.com/nguyenngoclongdev/pkgscan/actions/workflows/ci.yml/badge.svg)](https://github.com/nguyenngoclongdev/pkgscan/actions/workflows/ci.yml)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/nguyenngoclongdev/pkgscan/)
 
 [![npm version](https://img.shields.io/npm/v/pkgscan.svg?style=flat-square)](https://www.npmjs.org/package/pkgscan)
@@ -10,6 +11,8 @@
 
 `pkgscan` is a simple and efficient tool to get detailed information about the packages installed in your project. With support from popular package managers such as `npm`, `pnpm`, and `yarn`, you can easily retrieve information about package versions, dependencies, and other relevant information related to installed packages.
 
+![pkgscan](https://github.com/nguyenngoclongdev/pkgscan/raw/HEAD/images/demo.gif)
+
 If you find this package useful for your projects, please consider supporting me by [Buy Me a Coffee](https://ko-fi.com/D1D2LBPX9). It's a great way to help me maintain and improve this package in the future. Your support is truly appreciated!
 
 <a href='https://ko-fi.com/D1D2LBPX9' target='_blank'>
@@ -21,6 +24,9 @@ If you find this package useful for your projects, please consider supporting me
 **npm**
 
 ```sh
+# Try with npx
+npx pkgscan [options]
+
 # Locally in your project.
 npm install pkgscan
 
@@ -59,18 +65,44 @@ import { getInstalledPackageDetails } from 'pkgscan';
 // Get details about the installed package with automatic package manager detection.
 const installedPackage = await getInstalledPackageDetails('typescript');
 console.log(installedPackage);
+/*
+[
+  {
+    name: 'typescript',
+    version: '5.1.3',
+    isDirectProjectDependency: true,
+    dev: true,
+    license: 'Apache-2.0',
+    engines: { node: '>=14.17' }
+  }
+]
+*/
 
 // Get details about the installed package with a user-specified package manager.
 const cwd = __dirname;
 const installedPackage = await getInstalledPackageDetails('typescript', cwd);
 console.log(installedPackage);
+/*
+[
+  {
+    name: 'typescript',
+    version: '5.1.3',
+    isDirectProjectDependency: true,
+    dev: true,
+    license: 'Apache-2.0',
+    engines: { node: '>=14.17' }
+  }
+]
+*/
 ```
+
+> `isDirectProjectDependency` used to determine whether a package is a direct dependency of a project or not. By using this variable, you can check whether a package is directly listed in the dependencies section of the project's package.json file or not.
 
 ## Supported package managers:
 
-- [x] npm (lock file versions 1, 2, 3)
-- [x] pnpm (all versions of lock files)
-- [x] yarn (all versions of lock files)
+-   [x] npm (lock file versions 1, 2, 3)
+-   [x] pnpm (all versions of lock files)
+-   [x] yarn (all versions of lock files)
 
 ## Feedback
 

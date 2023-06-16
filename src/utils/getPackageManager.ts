@@ -9,19 +9,22 @@ export const getPackageManager = (cwd: string): PackageManager | undefined => {
     const npmLockFileName = 'package-lock.json';
     const npmLockFile = cwd.endsWith(npmLockFileName) ? cwd : path.join(cwd, npmLockFileName);
     if (existsSync(npmLockFile)) {
-        return new NpmModule(npmLockFile);
+        const rootPath = cwd.endsWith(npmLockFileName) ? cwd.replace(npmLockFileName, "") : cwd;
+        return new NpmModule(rootPath, npmLockFile);
     }
 
     const pnpmLockFileName = 'pnpm-lock.yaml';
     const pnpmLockFile = cwd.endsWith(pnpmLockFileName) ? cwd : path.join(cwd, pnpmLockFileName);
     if (existsSync(pnpmLockFile)) {
-        return new PnpmModule(pnpmLockFile);
+        const rootPath = cwd.endsWith(pnpmLockFileName) ? cwd.replace(pnpmLockFileName, "") : cwd;
+        return new PnpmModule(rootPath, pnpmLockFile);
     }
 
     const yarnLockFileName = 'yarn.lock';
     const yarnLockFile = cwd.endsWith(yarnLockFileName) ? cwd : path.join(cwd, yarnLockFileName);
     if (existsSync(yarnLockFile)) {
-        return new YarnModule(yarnLockFile);
+        const rootPath = cwd.endsWith(yarnLockFileName) ? cwd.replace(yarnLockFileName, "") : cwd;
+        return new YarnModule(rootPath, yarnLockFile);
     }
     return undefined;
 };

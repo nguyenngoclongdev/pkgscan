@@ -1,24 +1,25 @@
 import { readFileSync } from 'fs';
+import resolvePackagePath from 'resolve-package-path';
+import { getPackageName } from '../../utils/getPackageName';
 import { PackageInfo, PackageManager } from '../PackageManager';
 
 export class NpmModule implements PackageManager {
+    public readonly cwd: string;
     public readonly lockFilePath: string;
-    constructor(lockFilePath: string) {
+    constructor(cwd: string, lockFilePath: string) {
+        this.cwd = cwd;
         this.lockFilePath = lockFilePath;
     }
 
-    private match = (installedPackage: string, packageNameFinding: string) => {
-        const installedPackageNoPrefix = installedPackage.replace('node_modules/', '');
-        return installedPackageNoPrefix.startsWith(`${packageNameFinding}`);
-    };
-
-    private transform = (name: string, raw: any): PackageInfo => {
+    private transform = (packageName: string, packageDetail: any): PackageInfo => {
+        const packageJSONPath = packageName ? resolvePackagePath(packageName, this.cwd, false) : undefined;
         return {
-            name: name.replace('node_modules/', '').split('@')[0],
-            version: raw.version,
-            dev: raw.dev,
-            license: raw.license,
-            engines: raw.engines
+            name: packageName,
+            version: packageDetail.version,
+            isDirectProjectDependency: packageJSONPath?.includes(packageDetail.version) || false,
+            dev: packageDetail.dev,
+            license: packageDetail.license,
+            engines: packageDetail.engines
         };
     };
 
@@ -44,7 +45,7 @@ export class NpmModule implements PackageManager {
 
         // Find the package
         return Object.entries(allDependencies)
-            .filter(([installedPackage]) => this.match(installedPackage, packageNameFinding))
-            .map((p) => this.transform(p[0], p[1]));
+            .filter(([text]) => getPackageName(text) === packageNameFinding)
+            .map(([text, packageDetail]) => this.transform(getPackageName(text), packageDetail));
     }
 }

@@ -2,7 +2,7 @@
     "name": "pkgscan",
     "displayName": "pkgscan - Installed Package Scan",
     "description": "Retrieve information on installed packages across npm, pnpm and yarn",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "main": "./dist/index.js",
     "bin": {
         "pkgscan": "./dist/cli.js"
@@ -49,6 +49,7 @@
         "lint": "eslint src --ext ts",
         "test": "jest",
         "gi": "npm install -g .",
+        "pkgscan": "node dist/cli.js",
         "types": "tsc --emitDeclarationOnly --declaration --declarationDir ./dist --skipLibCheck",
         "cs": "changeset",
         "ci:compile": "pnpm esbuild-base --minify && pnpm types",
@@ -75,7 +76,7 @@
         "@yarnpkg/lockfile": "^1.1.0",
         "ansi-colors": "^4.1.3",
         "js-yaml": "^4.1.0",
-        "nanospinner": "^1.1.0",
+        "resolve-package-path": "^4.0.3",
         "yargs": "^17.7.2"
     },
     "author": {

@@ -9,7 +9,7 @@ import { logger } from './utils/logger.js';
 const main = async (argv: ArgvType) => {
     const { pkg, cwd = process.cwd() } = argv;
     if (!pkg) {
-        logger.warn('The package name provided is null or empty.');
+        logger.warn(`The package name provided is null or empty.`);
         return;
     }
 
@@ -33,7 +33,7 @@ const main = async (argv: ArgvType) => {
         logger.table(installedPackageFound);
     } catch (error) {
         const message = (error as any).message;
-        logger.error('Oops, something went wrong.', message);
+        logger.error(`Oops, something went wrong.`, message);
     }
 };
 

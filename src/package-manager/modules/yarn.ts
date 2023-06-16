@@ -1,27 +1,23 @@
 import { parse } from '@yarnpkg/lockfile';
 import { readFileSync } from 'fs';
+import resolvePackagePath from 'resolve-package-path';
+import { getPackageName } from '../../utils/getPackageName';
 import { PackageInfo, PackageManager } from '../PackageManager';
 
 export class YarnModule implements PackageManager {
+    public readonly cwd: string;
     public readonly lockFilePath: string;
-    constructor(lockFilePath: string) {
+    constructor(cwd: string, lockFilePath: string) {
+        this.cwd = cwd;
         this.lockFilePath = lockFilePath;
     }
 
-    private match = (installedPackage: string, packageNameFinding: string) => {
-        return installedPackage.startsWith(`${packageNameFinding}@`);
-    };
-
-    private getPackageName = (text: string): string => {
-        const packageName = text.replace('/', '');
-        return packageName.split('@')[0];
-    };
-
-    private transform = (packageNameFinding: string, text: string, detail: any): PackageInfo => {
+    private transform = (packageName: string, packageDetail: any): PackageInfo => {
+        const packageJSONPath = packageName ? resolvePackagePath(packageName, this.cwd, false) : undefined;
         return {
-            name: this.getPackageName(text) || packageNameFinding,
-            version: detail.version,
-            resolved: detail.resolved
+            name: packageName,
+            version: packageDetail.version,
+            isDirectProjectDependency: packageJSONPath?.includes(packageDetail.version) || false
         };
     };
 
@@ -33,7 +29,7 @@ export class YarnModule implements PackageManager {
 
         // Find the package
         return Object.entries(installedPackages)
-            .filter(([installedPackage]) => this.match(installedPackage, packageNameFinding))
-            .map((p) => this.transform(packageNameFinding, p[0], p[1]));
+            .filter(([text]) => getPackageName(text) === packageNameFinding)
+            .map(([text, packageDetail]) => this.transform(getPackageName(text), packageDetail));
     }
 }
