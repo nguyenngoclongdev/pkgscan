@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.2
+
+### Patch Changes
+
+- 5fe6772: remove images folder to decrease package size
+
 ## 1.0.1
 
 ### Patch Changes
