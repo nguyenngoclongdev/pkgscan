@@ -9,6 +9,21 @@
 
 # pkgscan
 
+<p align="center">
+  <!-- npm -->
+  <a href="https://www.npmjs.com" target="_blank">
+      <img src="https://img.shields.io/badge/npm-CB3837?logo=npm&logoColor=fff&style=for-the-badge" alt="npm">
+  </a>
+  <!-- yarn -->
+  <a href="https://yarnpkg.com" target="_blank">
+     <img src="https://img.shields.io/badge/Yarn-2C8EBB?logo=yarn&logoColor=fff&style=for-the-badge" alt="yarn">
+  </a>
+    <!-- pnpm -->
+  <a href="https://pnpm.io" target="_blank">
+     <img src="https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=fff&style=for-the-badge" alt="pnpm">
+  </a>
+</p>
+
 `pkgscan` is a simple and efficient tool to get detailed information about the packages installed in your project. With support from popular package managers such as `npm`, `pnpm`, and `yarn`, you can easily retrieve information about package versions, dependencies, and other relevant information related to installed packages.
 
 ![pkgscan](https://github.com/nguyenngoclongdev/pkgscan/raw/HEAD/images/demo.gif)
@@ -97,12 +112,6 @@ console.log(installedPackage);
 ```
 
 > `isDirectProjectDependency` used to determine whether a package is a direct dependency of a project or not. By using this variable, you can check whether a package is directly listed in the dependencies section of the project's package.json file or not.
-
-## Supported package managers:
-
--   [x] npm (lock file versions 1, 2, 3)
--   [x] pnpm (all versions of lock files)
--   [x] yarn (all versions of lock files)
 
 ## Feedback
 

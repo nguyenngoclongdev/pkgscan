@@ -1,6 +1,6 @@
 import { parse } from '@yarnpkg/lockfile';
+import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
-import resolvePackagePath from 'resolve-package-path';
 import { getPackageName } from '../../utils/getPackageName';
 import { PackageInfo, PackageManager } from '../PackageManager';
 
@@ -12,12 +12,25 @@ export class YarnModule implements PackageManager {
         this.lockFilePath = lockFilePath;
     }
 
+    private isDirectProjectDependency = (packageName: string, packageVersion: string): boolean => {
+        try {
+            const buffer = execSync('npm list --depth=0', { encoding: 'utf-8', cwd: this.cwd });
+            const list = buffer
+                .split('\n')
+                .filter((line) => line.startsWith('├─') || line.startsWith('└─'))
+                .map((line) => line.trim().split(' ')[1]);
+            const fullName = `${packageName}@${packageVersion}`;
+            return list.includes(fullName);
+        } catch {
+            return false;
+        }
+    };
+
     private transform = (packageName: string, packageDetail: any): PackageInfo => {
-        const packageJSONPath = packageName ? resolvePackagePath(packageName, this.cwd, false) : undefined;
         return {
             name: packageName,
             version: packageDetail.version,
-            isDirectProjectDependency: packageJSONPath?.includes(packageDetail.version) || false
+            isDirectProjectDependency: this.isDirectProjectDependency(packageName, packageDetail.version)
         };
     };
 

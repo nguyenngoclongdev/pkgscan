@@ -12,13 +12,22 @@ export class PnpmModule implements PackageManager {
         this.lockFilePath = lockFilePath;
     }
 
+    private isDirectProjectDependency = (packageName: string, packageVersion: string): boolean => {
+        try {
+            const packageJSONPath = packageName ? resolvePackagePath(packageName, this.cwd, false) : undefined;
+            return packageJSONPath?.includes(packageVersion) || false;
+        } catch {
+            return false;
+        }
+    };
+
     private transform = (packageName: string, packageDetail: any): PackageInfo => {
         const packageJSONPath = packageName ? resolvePackagePath(packageName, this.cwd, false) : undefined;
         return {
             name: packageName,
             version: packageDetail.version,
-            isDirectProjectDependency: packageJSONPath?.includes(packageDetail.version) || false,
-            engines: packageDetail.engines,
+            isDirectProjectDependency: this.isDirectProjectDependency(packageName, packageDetail.version),
+            engines: packageDetail.engines
         };
     };
 
