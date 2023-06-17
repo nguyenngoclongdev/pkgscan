@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.3
+
+### Patch Changes
+
+- 2a096f8: support check direct install in project with npm and yarn
+
 ## 1.0.2
 
 ### Patch Changes
