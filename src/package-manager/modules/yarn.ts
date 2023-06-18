@@ -1,7 +1,7 @@
 import { parse } from '@yarnpkg/lockfile';
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
-import { getPackageName } from '../../utils/getPackageName';
+import { getPackageName, isMatching } from '../../utils/getPackageName';
 import { PackageInfo, PackageManager } from '../PackageManager';
 
 export class YarnModule implements PackageManager {
@@ -12,37 +12,44 @@ export class YarnModule implements PackageManager {
         this.lockFilePath = lockFilePath;
     }
 
+    private installedPackageList: string[] | undefined;
     private isDirectProjectDependency = (packageName: string, packageVersion: string): boolean => {
         try {
-            const buffer = execSync('npm list --depth=0', { encoding: 'utf-8', cwd: this.cwd });
-            const list = buffer
-                .split('\n')
-                .filter((line) => line.startsWith('├─') || line.startsWith('└─'))
-                .map((line) => line.trim().split(' ')[1]);
+            // HACK: yarn list --depth=0 not work correctly
+            // https://github.com/yarnpkg/yarn/issues/3569
+            if (!this.installedPackageList) {
+                const buffer = execSync('npm list --depth=0', { encoding: 'utf-8', cwd: this.cwd });
+                this.installedPackageList = buffer
+                    .split('\n')
+                    .filter((line) => line.startsWith('├─') || line.startsWith('└─'))
+                    .map((line) => line.trim().split(' ')[1]);
+            }
+
             const fullName = `${packageName}@${packageVersion}`;
-            return list.includes(fullName);
+            return this.installedPackageList.includes(fullName);
         } catch {
             return false;
         }
     };
 
     private transform = (packageName: string, packageDetail: any): PackageInfo => {
+        const isDirectProjectDependency = this.isDirectProjectDependency(packageName, packageDetail.version);
         return {
             name: packageName,
             version: packageDetail.version,
-            isDirectProjectDependency: this.isDirectProjectDependency(packageName, packageDetail.version)
+            isDirectProjectDependency
         };
     };
 
-    async getInstalledPackage(packageNameFinding: string): Promise<PackageInfo[]> {
+    async getInstalledPackage(packageFinding: string): Promise<PackageInfo[]> {
         const lockFileContent = readFileSync(this.lockFilePath, { encoding: 'utf-8' });
 
         // Get all dependencies
-        const installedPackages = parse(lockFileContent).object;
+        const allDependencies = parse(lockFileContent).object;
 
         // Find the package
-        return Object.entries(installedPackages)
-            .filter(([text]) => getPackageName(text) === packageNameFinding)
+        return Object.entries(allDependencies)
+            .filter(([text]) => isMatching(text, packageFinding))
             .map(([text, packageDetail]) => this.transform(getPackageName(text), packageDetail));
     }
 }

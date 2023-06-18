@@ -24,7 +24,7 @@
   </a>
 </p>
 
-`pkgscan` is a simple and efficient tool to get detailed information about the packages installed in your project. With support from popular package managers such as `npm`, `pnpm`, and `yarn`, you can easily retrieve information about package versions, dependencies, and other relevant information related to installed packages.
+`pkgscan` is a useful tool to inspect installed packages in your project. It provides detailed information about installed packages managed by popular package managers like `npm`, `pnpm` and `yarn`.
 
 ![pkgscan](https://github.com/nguyenngoclongdev/pkgscan/raw/HEAD/images/demo.gif)
 
@@ -67,6 +67,9 @@ Options:
 ```sh
 # Get details about the installed package with automatic package manager detection.
 pkgscan --pkg typescript
+
+# Get details about the installed package with glob pattern.
+pkgscan --pkg '@types/*'
 
 # Get details about the installed package with a user-specified package manager.
 pkgscan --pkg typescript --cwd ./project-directory-path

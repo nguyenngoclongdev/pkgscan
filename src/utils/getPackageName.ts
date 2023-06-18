@@ -1,3 +1,5 @@
+import { minimatch } from 'minimatch';
+
 const REGEX_PACKAGE: RegExp = /^@?[^@\s]+/;
 
 const normalizePackageName = (input: string) => {
@@ -18,4 +20,8 @@ export const getPackageName = (input: string) => {
         return output;
     }
     return matching[0];
+};
+
+export const isMatching = (packageName: string, packageFinding: string): boolean => {
+    return minimatch(getPackageName(packageName), packageFinding);
 };
