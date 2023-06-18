@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.4
+
+### Patch Changes
+
+- 00d7dca: support searching installed package with glob pattern
+
 ## 1.0.3
 
 ### Patch Changes
