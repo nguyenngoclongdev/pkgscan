@@ -6,8 +6,8 @@ const getCurrentPath = (filePath: string): string => {
     return path.join(__dirname, filePath);
 };
 
-describe('Test Gherkin Code Parse', () => {
-    const cypressCases = [
+describe('Test pkgscan', () => {
+    const cases = [
         { lockFilePath: './fixtures/npm/v1', packageName: '@types/node', expectedVersion: '8.0.10' },
         { lockFilePath: './fixtures/npm/v2', packageName: '@types/node', expectedVersion: '18.7.9' },
         { lockFilePath: './fixtures/npm/v3', packageName: '@types/node', expectedVersion: '20.3.1' },
@@ -20,7 +20,7 @@ describe('Test Gherkin Code Parse', () => {
         { lockFilePath: './fixtures/yarn', packageName: 'typescript', expectedVersion: '5.1.3' },
         { lockFilePath: './fixtures/pnpm', packageName: 'typescript', expectedVersion: '5.0.4' }
     ];
-    test.each(cypressCases)(
+    test.each(cases)(
         'Find package $packageName at the $lockFilePath',
         async ({ packageName, lockFilePath, expectedVersion }) => {
             // Test method

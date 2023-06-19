@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import yaml from 'js-yaml';
-import resolvePackagePath from 'resolve-package-path';
 import { getPackageName, isMatching } from '../../utils/getPackageName';
+import { isDirectDependency } from '../../utils/isDirectDependency';
 import { PackageInfo, PackageManager } from '../PackageManager';
 
 export class PnpmModule implements PackageManager {
@@ -12,17 +12,8 @@ export class PnpmModule implements PackageManager {
         this.lockFilePath = lockFilePath;
     }
 
-    private isDirectProjectDependency = (packageName: string, packageVersion: string): boolean => {
-        try {
-            const packageJSONPath = packageName ? resolvePackagePath(packageName, this.cwd, false) : undefined;
-            return packageJSONPath?.includes(packageVersion) || false;
-        } catch {
-            return false;
-        }
-    };
-
     private transform = (packageName: string, packageDetail: any): PackageInfo => {
-        const isDirectProjectDependency = this.isDirectProjectDependency(packageName, packageDetail.version);
+        const isDirectProjectDependency = isDirectDependency(this.cwd, packageName, packageDetail.version);
         return {
             name: packageName,
             version: packageDetail.version,

@@ -71,6 +71,9 @@ pkgscan --pkg typescript
 # Get details about the installed package with glob pattern.
 pkgscan --pkg '@types/*'
 
+# To scan all installed packages
+pkgscan --pkg '*'
+
 # Get details about the installed package with a user-specified package manager.
 pkgscan --pkg typescript --cwd ./project-directory-path
 ```
