@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.5
+
+### Patch Changes
+
+- a3e10b7: improve the performance when scan package
+
 ## 1.0.4
 
 ### Patch Changes
