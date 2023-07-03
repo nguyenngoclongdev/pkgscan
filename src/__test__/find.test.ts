@@ -1,5 +1,5 @@
 import path from 'path/posix';
-import { getInstalledPackageDetails } from '..';
+import { getInstalledPackage } from '..';
 import { logger } from '../utils/logger';
 
 const getCurrentPath = (filePath: string): string => {
@@ -24,7 +24,7 @@ describe('Test pkgscan', () => {
         'Find package $packageName at the $lockFilePath',
         ({ packageName, lockFilePath, expectedVersion }) => {
             // Test method
-            const packages = getInstalledPackageDetails(packageName, getCurrentPath(lockFilePath));
+            const packages = getInstalledPackage(packageName, getCurrentPath(lockFilePath));
 
             // Print the result
             logger.info(`Find package ${packageName} at the ${lockFilePath}`);
