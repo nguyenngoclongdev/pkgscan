@@ -21,7 +21,7 @@ export class YarnModule implements PackageManager {
         };
     };
 
-    async getInstalledPackage(packageFinding: string): Promise<PackageInfo[]> {
+    getInstalledPackage(packageFinding: string): PackageInfo[] {
         const lockFileContent = readFileSync(this.lockFilePath, { encoding: 'utf-8' });
 
         // Get all dependencies

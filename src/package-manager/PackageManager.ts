@@ -8,5 +8,5 @@ export interface PackageInfo {
 export interface PackageManager {
     cwd: string;
     lockFilePath: string;
-    getInstalledPackage(packageName: string): Promise<PackageInfo[]>;
+    getInstalledPackage(packageName: string): PackageInfo[];
 }

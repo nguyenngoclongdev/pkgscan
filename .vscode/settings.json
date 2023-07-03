@@ -32,5 +32,8 @@
         "outfile",
         "pkgscan",
         "yarnlockfile"
-    ]
+    ],
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    }
 }

@@ -22,9 +22,9 @@ describe('Test pkgscan', () => {
     ];
     test.each(cases)(
         'Find package $packageName at the $lockFilePath',
-        async ({ packageName, lockFilePath, expectedVersion }) => {
+        ({ packageName, lockFilePath, expectedVersion }) => {
             // Test method
-            const packages = await getInstalledPackageDetails(packageName, getCurrentPath(lockFilePath));
+            const packages = getInstalledPackageDetails(packageName, getCurrentPath(lockFilePath));
 
             // Print the result
             logger.info(`Find package ${packageName} at the ${lockFilePath}`);
