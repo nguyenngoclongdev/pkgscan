@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.15
+
+### Patch Changes
+
+- a5ad038: remove show help on fail
+
 ## 1.0.14
 
 ### Patch Changes
