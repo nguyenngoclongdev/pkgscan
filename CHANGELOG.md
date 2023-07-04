@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.7
+
+### Patch Changes
+
+- 8075f5d: parse pnpm lock file
+
 ## 1.0.6
 
 ### Patch Changes
