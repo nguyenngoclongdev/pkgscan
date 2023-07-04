@@ -66,7 +66,7 @@ const argv = yargsInstance
         description: colors.dim('Show help')
     })
     .version(packageFile.version)
-    .hide('version')
+    .alias('v', 'version')
     .wrap(yargsInstance.terminalWidth())
     .epilog('© NGUYEN NGOC LONG. All Rights Reserved.')
     .parseSync();
