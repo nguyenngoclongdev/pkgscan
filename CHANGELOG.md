@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.11
+
+### Patch Changes
+
+- de29efd: add resolution to detect installed package
+
 ## 1.0.10
 
 ### Patch Changes
