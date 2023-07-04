@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.16
+
+### Patch Changes
+
+- 68f0d3d: set undefined if not find property
+
 ## 1.0.15
 
 ### Patch Changes
