@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.13
+
+### Patch Changes
+
+- 0e73f37: show cli version and short version cli
+
 ## 1.0.12
 
 ### Patch Changes
