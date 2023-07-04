@@ -67,8 +67,6 @@ const argv = yargsInstance
     })
     .version(packageFile.version)
     .alias('v', 'version')
-    .showHelpOnFail(true)
-    .demandCommand(1, '')
     .wrap(yargsInstance.terminalWidth())
     .epilog('© NGUYEN NGOC LONG. All Rights Reserved.')
     .parseSync();
