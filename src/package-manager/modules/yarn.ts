@@ -1,8 +1,8 @@
 import { parse } from '@yarnpkg/lockfile';
 import { readFileSync } from 'fs';
-import { getPackageName, isMatching } from '../../utils/getPackageName';
+import { minimatch } from 'minimatch';
 import { isDirectDependency } from '../../utils/isDirectDependency';
-import { PackageInfo, PackageManager } from '../PackageManager';
+import { BasicPackageInfo, PackageInfo, PackageManager } from '../PackageManager';
 
 export class YarnModule implements PackageManager {
     public readonly cwd: string;
@@ -12,12 +12,41 @@ export class YarnModule implements PackageManager {
         this.lockFilePath = lockFilePath;
     }
 
-    private transform = (packageName: string, packageDetail: any): PackageInfo => {
-        const isDirectProjectDependency = isDirectDependency(this.cwd, packageName, packageDetail.version);
+    private normalizePackageName = (input: string) => {
+        let output = input;
+        if (output.startsWith('node_modules/')) {
+            output = output.replace('node_modules/', '');
+        }
+        if (output.startsWith('/')) {
+            output = output.substring(1);
+        }
+        return output;
+    };
+
+    private getPackageInfo = (input: string): BasicPackageInfo => {
+        const output = this.normalizePackageName(input);
+        const regex: RegExp = /^@?[^@\s]+/;
+        const matching = regex.exec(output);
+        if (!matching) {
+            return { name: output };
+        }
+        return { name: matching[0] };
+    };
+
+    private isMatching = (packageName: string, packageFinding: string): boolean => {
+        const pkgInfo = this.getPackageInfo(packageName);
+        return minimatch(pkgInfo.name, packageFinding);
+    };
+
+    private transform = (packageInfo: BasicPackageInfo, packageDetail: any): PackageInfo => {
+        const isDirectProjectDependency = isDirectDependency(this.cwd, packageInfo.name, packageDetail.version);
         return {
-            name: packageName,
+            name: packageInfo.name,
             version: packageDetail.version,
-            isDirectProjectDependency
+            isDirectProjectDependency,
+            dev: packageDetail.dev,
+            license: packageDetail.license,
+            engines: packageDetail.engines
         };
     };
 
@@ -29,7 +58,7 @@ export class YarnModule implements PackageManager {
 
         // Find the package
         return Object.entries(allDependencies)
-            .filter(([text]) => isMatching(text, packageFinding))
-            .map(([text, packageDetail]) => this.transform(getPackageName(text), packageDetail));
+            .filter(([text]) => this.isMatching(text, packageFinding))
+            .map(([text, packageDetail]) => this.transform(this.getPackageInfo(text), packageDetail));
     }
 }

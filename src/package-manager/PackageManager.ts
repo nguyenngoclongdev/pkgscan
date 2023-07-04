@@ -1,3 +1,8 @@
+export interface BasicPackageInfo {
+    name: string;
+    version?: string;
+}
+
 export interface PackageInfo {
     name: string;
     version: string;
