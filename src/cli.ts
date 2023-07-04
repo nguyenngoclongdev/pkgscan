@@ -5,6 +5,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { getPackageManager } from './utils/getPackageManager.js';
 import { logger } from './utils/logger.js';
+import * as packageFile from '../package.json';
 
 const main = (argv: ArgvType) => {
     const { pkg, cwd = process.cwd() } = argv;
@@ -64,6 +65,7 @@ const argv = yargsInstance
         type: 'string',
         description: colors.dim('Show help')
     })
+    .version(packageFile.version)
     .hide('version')
     .wrap(yargsInstance.terminalWidth())
     .epilog('© NGUYEN NGOC LONG. All Rights Reserved.')

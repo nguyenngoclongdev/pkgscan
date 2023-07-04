@@ -5,10 +5,11 @@
         "outDir": "dist",
         "lib": ["ES2020"],
         "sourceMap": true,
-        "rootDir": "src",
+        "rootDir": ".",
         "strict": true,
         "esModuleInterop": true,
-        "moduleResolution": "nodenext"
+        "moduleResolution": "nodenext",
+        "resolveJsonModule": true
     },
     "exclude": ["node_modules"]
 }
