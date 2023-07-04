@@ -14,7 +14,8 @@ export const isDirectDependency = (cwd: string, packageName: string, packageVers
                 ...(packageJson.optionalDependencies || {}),
                 ...(packageJson.devDependencies || {}),
                 ...(packageJson.peerDependencies || {}),
-                ...(packageJson.dependencies || {})
+                ...(packageJson.dependencies || {}),
+                ...(packageJson.resolutions || {})
             };
         }
         const pkg = dependencies[packageName];
