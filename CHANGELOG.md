@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.8
+
+### Patch Changes
+
+- f7b8020: not detect direct project dependency on pnpm
+
 ## 1.0.7
 
 ### Patch Changes
