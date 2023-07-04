@@ -11,8 +11,8 @@ export class NpmModule implements PackageManager {
         this.lockFilePath = lockFilePath;
     }
 
-    private normalizePackageName = (input: string) => {
-        let output = input;
+    private normalizeRawLine = (line: string) => {
+        let output = line;
         if (output.startsWith('node_modules/')) {
             output = output.replace('node_modules/', '');
         }
@@ -22,8 +22,8 @@ export class NpmModule implements PackageManager {
         return output;
     };
 
-    private getPackageInfo = (input: string): BasicPackageInfo => {
-        const output = this.normalizePackageName(input);
+    private getPackageInfo = (line: string): BasicPackageInfo => {
+        const output = this.normalizeRawLine(line);
         const regex: RegExp = /^@?[^@\s]+/;
         const matching = regex.exec(output);
         if (!matching) {

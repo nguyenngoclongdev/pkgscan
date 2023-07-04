@@ -11,8 +11,8 @@ export class PnpmModule implements PackageManager {
         this.lockFilePath = lockFilePath;
     }
 
-    private normalizePackageName = (input: string) => {
-        let output = input;
+    private normalizeRawLine = (line: string) => {
+        let output = line;
         if (output.startsWith('node_modules/')) {
             output = output.replace('node_modules/', '');
         }
@@ -27,13 +27,28 @@ export class PnpmModule implements PackageManager {
         return result.trim();
     };
 
-    private getPackageInfo = (input: string): BasicPackageInfo => {
-        const output = this.normalizePackageName(input);
-        const split = output.split('/');
-        const packageVersion = split[split.length - 1];
-        split.pop(); // remove last item (constain version number)
-        const packageName = split.join('/');
-        return { name: packageName, version: packageVersion };
+    private normalizePackageName = (lineSplit: string[]) => {
+        const rawPackageVersion = [...lineSplit];
+
+        // @typescript-eslint/eslint-plugin/5.59.11 => @typescript-eslint/eslint-plugin
+        rawPackageVersion.pop(); // remove last item (constain version number)
+        return rawPackageVersion.join('/');
+    };
+
+    private normalizePackageVersion = (lineSplit: string[]) => {
+        const rawPackageVersion = lineSplit[lineSplit.length - 1];
+        let output = rawPackageVersion?.trim() || '';
+
+        // 12.2.0_57ubdvajp6562okxygabugvlve => 12.2.0
+        const split = output.split('_');
+        split.pop(); // remove last item (constain version integrity)
+        return split.join('');
+    };
+
+    private getPackageInfo = (line: string): BasicPackageInfo => {
+        const output = this.normalizeRawLine(line);
+        const lineSplit = output.split('/');
+        return { name: this.normalizePackageName(lineSplit), version: this.normalizePackageVersion(lineSplit) };
     };
 
     private isMatching = (packageName: string, packageFinding: string): boolean => {
