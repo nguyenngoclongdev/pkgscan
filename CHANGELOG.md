@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.9
+
+### Patch Changes
+
+- 6bd3c5c: normalize package version on pnpm
+
 ## 1.0.8
 
 ### Patch Changes
