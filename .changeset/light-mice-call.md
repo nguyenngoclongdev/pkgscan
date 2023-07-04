@@ -1,0 +1,5 @@
+---
+"pkgscan": patch
+---
+
+update README
