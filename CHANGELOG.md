@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.14
+
+### Patch Changes
+
+- 8cc9cef: show help on fail
+
 ## 1.0.13
 
 ### Patch Changes
