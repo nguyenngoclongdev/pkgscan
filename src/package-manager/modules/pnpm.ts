@@ -59,12 +59,16 @@ export class PnpmModule implements PackageManager {
     };
 
     private transform = (packageInfo: BasicPackageInfo, packageDetail: any): PackageInfo => {
-        const isDirectProjectDependency = isDirectDependency(this.cwd, packageInfo.name, packageInfo.version || packageDetail.version);
+        const isDirectProjectDependency = isDirectDependency(
+            this.cwd,
+            packageInfo.name,
+            packageInfo.version || packageDetail.version
+        );
         return {
             name: packageInfo.name,
             version: packageInfo.version || '',
             isDirectProjectDependency,
-            engines: packageDetail.engines
+            engines: packageDetail.engines || undefined
         };
     };
 

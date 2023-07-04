@@ -43,9 +43,9 @@ export class NpmModule implements PackageManager {
             name: packageInfo.name,
             version: packageDetail.version,
             isDirectProjectDependency,
-            dev: packageDetail.dev,
-            license: packageDetail.license,
-            engines: packageDetail.engines
+            dev: packageDetail.dev || undefined,
+            license: packageDetail.license || undefined,
+            engines: packageDetail.engines || undefined
         };
     };
 
