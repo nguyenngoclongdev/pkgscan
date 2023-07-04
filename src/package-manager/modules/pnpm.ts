@@ -28,11 +28,11 @@ export class PnpmModule implements PackageManager {
     };
 
     private normalizePackageName = (lineSplit: string[]) => {
-        const rawPackageVersion = [...lineSplit];
+        const rawPackageName = [...lineSplit];
 
         // @typescript-eslint/eslint-plugin/5.59.11 => @typescript-eslint/eslint-plugin
-        rawPackageVersion.pop(); // remove last item (constain version number)
-        return rawPackageVersion.join('/');
+        rawPackageName.pop(); // remove last item (constain version number)
+        return rawPackageName.join('/');
     };
 
     private normalizePackageVersion = (lineSplit: string[]) => {
@@ -41,7 +41,9 @@ export class PnpmModule implements PackageManager {
 
         // 12.2.0_57ubdvajp6562okxygabugvlve => 12.2.0
         const split = output.split('_');
-        split.pop(); // remove last item (constain version integrity)
+        if (split.length > 1) {
+            split.pop(); // remove last item (constain version integrity)
+        }
         return split.join('');
     };
 
