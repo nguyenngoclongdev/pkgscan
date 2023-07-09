@@ -2,7 +2,7 @@
     "name": "pkgscan",
     "displayName": "pkgscan - Installed Package Scan",
     "description": "Retrieve information on installed packages across npm, pnpm and yarn",
-    "version": "1.0.16",
+    "version": "1.0.17",
     "main": "./dist/index.js",
     "bin": {
         "pkgscan": "./dist/cli.js"
