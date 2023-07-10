@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.18
+
+### Patch Changes
+
+- 5ecd06d: update README
+
 ## 1.0.17
 
 ### Patch Changes
