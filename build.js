@@ -31,8 +31,5 @@ build({
 
 new Generator({
     entry: 'src/index.ts',
-    output: 'dist/index.d.ts',
-    force: false,
-    tsc: '--emitDeclarationOnly --declaration --outFile dist/index.d.ts --skipLibCheck',
-    logLevel: 'debug'
+    output: 'dist/index.d.ts'
 }).generate();
