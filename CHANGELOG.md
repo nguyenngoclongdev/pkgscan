@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.19
+
+### Patch Changes
+
+- aa165dd: add LICENSE for using a part source code from pnpm
+
 ## 1.0.18
 
 ### Patch Changes
