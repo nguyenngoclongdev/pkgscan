@@ -22,12 +22,12 @@ build({
     outfile: 'dist/index.js'
 });
 
-build({
-    ...sharedConfig,
-    outfile: 'dist/index.esm.js',
-    platform: 'neutral', // for ESM
-    format: 'esm'
-});
+// build({
+//     ...sharedConfig,
+//     outfile: 'dist/index.esm.js',
+//     platform: 'neutral', // for ESM
+//     format: 'esm'
+// });
 
 new Generator({
     entry: 'src/index.ts',
