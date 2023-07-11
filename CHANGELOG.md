@@ -1,5 +1,12 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.20
+
+### Patch Changes
+
+- 4416f71: support es-module
+- 2cd6761: generate types
+
 ## 1.0.19
 
 ### Patch Changes
