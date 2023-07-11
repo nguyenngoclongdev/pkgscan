@@ -3,7 +3,6 @@
 .github
 .vscode
 tslint.json
-tsconfig.json
 jest.config.js
 .eslintrc.json
 *.tgz

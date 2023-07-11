@@ -3,7 +3,13 @@
     "displayName": "pkgscan - Installed Package Scan",
     "description": "Retrieve information on installed packages across npm, pnpm and yarn",
     "version": "1.0.19",
-    "main": "./dist/index.js",
+    "module": "dist/index.esm.js",
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist/*"
+    ],
     "bin": {
         "pkgscan": "./dist/cli.js"
     },
@@ -43,16 +49,13 @@
         "devDependencies"
     ],
     "scripts": {
-        "esbuild-base": "esbuild ./src/index.ts ./src/cli.ts --bundle --outdir=dist --platform=node",
-        "compile": "pnpm esbuild-base --sourcemap",
-        "watch": "pnpm esbuild-base --sourcemap --watch",
+        "compile": "node build.js",
         "lint": "eslint src --ext ts",
-        "test": "jest",
+        "test": "jest --passWithNoTests",
         "gi": "npm install -g .",
         "pkgscan": "node dist/cli.js",
-        "types": "tsc --emitDeclarationOnly --declaration --declarationDir ./dist --skipLibCheck",
         "cs": "changeset",
-        "ci:compile": "pnpm esbuild-base --minify && pnpm types",
+        "ci:compile": "node build.js",
         "ci:publish": "changeset publish && git push --follow-tags"
     },
     "devDependencies": {
