@@ -2,7 +2,7 @@
     "name": "pkgscan",
     "displayName": "pkgscan - Installed Package Scan",
     "description": "Retrieve information on installed packages across npm, pnpm and yarn",
-    "version": "1.0.19",
+    "version": "1.0.20",
     "module": "dist/index.esm.js",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
