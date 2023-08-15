@@ -23,6 +23,7 @@
         "*.out": "javascript"
     },
     "cSpell.words": [
+        "comver",
         "nanospinner",
         "nargs",
         "Ngoc",
@@ -31,6 +32,7 @@
         "outdir",
         "outfile",
         "pkgscan",
+        "tsup",
         "yarnlockfile"
     ],
     "[json]": {
