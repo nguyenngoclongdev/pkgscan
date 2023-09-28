@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.23
+
+### Patch Changes
+
+- c88ded1: using strip-bom for cjs
+
 ## 1.0.22
 
 ### Patch Changes
