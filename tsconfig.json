@@ -1,14 +1,14 @@
 {
     "compilerOptions": {
-        "module": "ESNext",
         "target": "ESNext",
         "outDir": "dist",
+        "module": "ESNext",
+        "moduleResolution": "Node",
         "lib": ["ES2020"],
         "sourceMap": true,
         "rootDir": ".",
         "strict": true,
         "esModuleInterop": true,
-        "moduleResolution": "nodenext",
         "resolveJsonModule": true
     },
     "exclude": ["node_modules"]
