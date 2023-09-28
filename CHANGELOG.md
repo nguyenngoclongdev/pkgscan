@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.24
+
+### Patch Changes
+
+- b80cfb2: remove strip-bom package
+
 ## 1.0.23
 
 ### Patch Changes
