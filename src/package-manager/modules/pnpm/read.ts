@@ -11,6 +11,7 @@ import { logger } from '../../../utils/logger';
 import { LockfileBreakingChangeError } from './LockfileBreakingChangeError';
 import { autofixMergeConflicts, isDiff } from './gitMergeFile';
 import { revertFromInlineSpecifiersFormatIfNecessary } from './inlineSpecifiersLockfileConverters';
+import { stripBom } from '../../../utils/stripBOM';
 
 export type LockfileFile = Omit<Lockfile, 'importers'> &
     Partial<ProjectSnapshot> &
@@ -42,7 +43,7 @@ function _read(
 } {
     let lockfileRawContent;
     try {
-        lockfileRawContent = require('strip-bom').default(fs.readFileSync(lockfilePath, 'utf8'));
+        lockfileRawContent = stripBom(fs.readFileSync(lockfilePath, 'utf8'));
     } catch (err: any) {
         // eslint-disable-line
         if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {

@@ -41,9 +41,6 @@ dependencies:
   semver:
     specifier: ^7.5.2
     version: 7.5.2
-  strip-bom:
-    specifier: 4.0.0
-    version: 4.0.0
   yargs:
     specifier: ^17.7.2
     version: 17.7.2
@@ -4694,6 +4691,7 @@ packages:
   /strip-bom@4.0.0:
     resolution: {integrity: sha512-3xurFv5tEgii33Zi8Jtp55wEIILR9eh34FAW00PZf+JnSsTmV/ioewSgQl97JHvgjoRGwPShsWm+IdrxB35d0w==}
     engines: {node: '>=8'}
+    dev: true
 
   /strip-final-newline@2.0.0:
     resolution: {integrity: sha512-BrpvfNAE3dcvq7ll3xVumzjKjZQ5tI1sEUIKr3Uoks0XUl45St3FlatVqef9prk4jRDzhW6WZg+3bk93y6pLjA==}
