@@ -30,7 +30,8 @@ const main = (argv: ArgvType) => {
             return;
         }
 
-        logger.success(`Installed package found:`);
+        logger.success(`Scan completed.`);
+        console.log(EOL);
         logger.table(installedPackageFound);
     } catch (error) {
         const message = (error as any).message;

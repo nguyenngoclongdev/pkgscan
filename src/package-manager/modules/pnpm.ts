@@ -68,7 +68,7 @@ export class PnpmModule implements PackageManager {
             name: packageInfo.name,
             version: packageInfo.version || '',
             isDirectProjectDependency,
-            engines: packageDetail.engines || undefined
+            ...packageDetail // engines, ...
         };
     };
 

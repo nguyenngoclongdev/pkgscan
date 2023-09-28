@@ -38,6 +38,9 @@ dependencies:
   minimatch:
     specifier: ^9.0.1
     version: 9.0.1
+  pretty3:
+    specifier: 0.4.2
+    version: 0.4.2
   semver:
     specifier: ^7.5.2
     version: 7.5.2
@@ -4246,6 +4249,12 @@ packages:
       ansi-styles: 5.2.0
       react-is: 18.2.0
     dev: true
+
+  /pretty3@0.4.2:
+    resolution: {integrity: sha512-T/BJX0w65Z5uKj1vV7ltuc8x2ttOVpGqYa7ogByYvgCSgzFOU2oUAMyI/ph9gB6yWlt+3XTTr3j1hfRKFxiLpw==}
+    dependencies:
+      ansi-styles: 4.3.0
+    dev: false
 
   /prompts@2.4.2:
     resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}

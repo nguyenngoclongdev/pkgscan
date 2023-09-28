@@ -41,11 +41,8 @@ export class NpmModule implements PackageManager {
         const isDirectProjectDependency = isDirectDependency(this.cwd, packageInfo.name, packageDetail.version);
         return {
             name: packageInfo.name,
-            version: packageDetail.version,
             isDirectProjectDependency,
-            dev: packageDetail.dev || undefined,
-            license: packageDetail.license || undefined,
-            engines: packageDetail.engines || undefined
+            ...packageDetail // version, dev, license, engines...
         };
     };
 
