@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.22
+
+### Patch Changes
+
+- 53234b7: support esm and cjs
+
 ## 1.0.21
 
 ### Patch Changes
