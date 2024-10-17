@@ -84,7 +84,7 @@ pkgscan --pkg typescript --cwd ./project-directory-path
 import { getInstalledPackage } from 'pkgscan';
 
 // Get details about the installed package with automatic package manager detection.
-const installedPackage = getInstalledPackage('typescript');
+const installedPackage = await getInstalledPackage('typescript');
 console.log(installedPackage);
 /*
 [
@@ -101,7 +101,7 @@ console.log(installedPackage);
 
 // Get details about the installed package with a user-specified package manager.
 const cwd = __dirname;
-const installedPackage = getInstalledPackage('typescript', cwd);
+const installedPackage = await getInstalledPackage('typescript', cwd);
 console.log(installedPackage);
 /*
 [

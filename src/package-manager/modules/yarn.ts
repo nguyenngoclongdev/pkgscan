@@ -44,13 +44,13 @@ export class YarnModule implements PackageManager {
             name: packageInfo.name,
             version: packageDetail.version,
             isDirectProjectDependency,
-            dev: packageDetail.dev || undefined,
-            license: packageDetail.license || undefined,
-            engines: packageDetail.engines || undefined
+            dev: packageDetail.dev || '',
+            license: packageDetail.license || '',
+            engines: packageDetail.engines || ''
         };
     };
 
-    getInstalledPackage(packageFinding: string): PackageInfo[] {
+    async getInstalledPackage(packageFinding: string): Promise<PackageInfo[]> {
         const lockFileContent = readFileSync(this.lockFilePath, { encoding: 'utf-8' });
 
         // Get all dependencies

@@ -7,7 +7,7 @@ import { getPackageManager } from './utils/getPackageManager.js';
 import { logger } from './utils/logger.js';
 import * as packageFile from '../package.json';
 
-const main = (argv: ArgvType) => {
+const main = async (argv: ArgvType) => {
     const { pkg, cwd = process.cwd() } = argv;
     if (!pkg) {
         logger.warn(`The package name provided is null or empty.`);
@@ -24,9 +24,9 @@ const main = (argv: ArgvType) => {
 
         // Retrieve information about the installed package.
         logger.info(`Analyzing the package manager ${packageManager.lockFilePath}...`);
-        const installedPackageFound = packageManager.getInstalledPackage(pkg);
+        const installedPackageFound = await packageManager.getInstalledPackage(pkg);
         if (!installedPackageFound || installedPackageFound.length <= 0) {
-            logger.warn('The requested package was not found.');
+            logger.warn(`The "${pkg}" package was not found.`);
             return;
         }
 

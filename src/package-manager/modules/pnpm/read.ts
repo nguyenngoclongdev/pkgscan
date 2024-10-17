@@ -1,23 +1,34 @@
-import { WANTED_LOCKFILE } from '@pnpm/constants';
-import { PnpmError } from '@pnpm/error';
-import { ProjectSnapshot, type Lockfile } from '@pnpm/lockfile-types';
-import { DEPENDENCIES_FIELDS } from '@pnpm/types';
-import comverToSemver from 'comver-to-semver';
-import fs from 'fs';
-import yaml from 'js-yaml';
+import { promises as fs } from 'fs';
 import path from 'path';
+import util from 'util';
+import { LOCKFILE_VERSION, WANTED_LOCKFILE } from '@pnpm/constants';
+import { PnpmError } from '@pnpm/error';
+import { mergeLockfileChanges } from '@pnpm/merge-lockfile-changes';
+import { type Lockfile } from '@pnpm/lockfile-types';
+import { type ProjectId } from '@pnpm/types';
+import comverToSemver from 'comver-to-semver';
+import yaml from 'js-yaml';
 import semver from 'semver';
-import { logger } from '../../../utils/logger';
+import { stripBom } from '../../../utils/stripBOM';
 import { LockfileBreakingChangeError } from './LockfileBreakingChangeError';
 import { autofixMergeConflicts, isDiff } from './gitMergeFile';
-import { revertFromInlineSpecifiersFormatIfNecessary } from './inlineSpecifiersLockfileConverters';
-import { stripBom } from '../../../utils/stripBOM';
+import { logger } from '../../../utils/logger';
+import { getWantedLockfileName } from './lockfileName';
+import { getGitBranchLockfileNames } from './gitBranchLockfile';
+import { convertToLockfileObject } from './lockfileFormatConverters';
 
-export type LockfileFile = Omit<Lockfile, 'importers'> &
-    Partial<ProjectSnapshot> &
-    Partial<Pick<Lockfile, 'importers'>>;
+export async function readCurrentLockfile(
+    virtualStoreDir: string,
+    opts: {
+        wantedVersions?: string[];
+        ignoreIncompatible: boolean;
+    }
+): Promise<Lockfile | null> {
+    const lockfilePath = path.join(virtualStoreDir, 'lock.yaml');
+    return (await _read(lockfilePath, virtualStoreDir, opts)).lockfile;
+}
 
-export function readWantedLockfile(
+export async function readWantedLockfileAndAutofixConflicts(
     pkgPath: string,
     opts: {
         wantedVersions?: string[];
@@ -25,11 +36,29 @@ export function readWantedLockfile(
         useGitBranchLockfile?: boolean;
         mergeGitBranchLockfiles?: boolean;
     }
-): Lockfile | null {
-    return _readWantedLockfile(pkgPath, opts).lockfile;
+): Promise<{
+    lockfile: Lockfile | null;
+    hadConflicts: boolean;
+}> {
+    return _readWantedLockfile(pkgPath, {
+        ...opts,
+        autofixMergeConflicts: true
+    });
 }
 
-function _read(
+export async function readWantedLockfile(
+    pkgPath: string,
+    opts: {
+        wantedVersions?: string[];
+        ignoreIncompatible: boolean;
+        useGitBranchLockfile?: boolean;
+        mergeGitBranchLockfiles?: boolean;
+    }
+): Promise<Lockfile | null> {
+    return (await _readWantedLockfile(pkgPath, opts)).lockfile;
+}
+
+async function _read(
     lockfilePath: string,
     prefix: string, // only for logging
     opts: {
@@ -37,16 +66,15 @@ function _read(
         wantedVersions?: string[];
         ignoreIncompatible: boolean;
     }
-): {
+): Promise<{
     lockfile: Lockfile | null;
     hadConflicts: boolean;
-} {
+}> {
     let lockfileRawContent;
     try {
-        lockfileRawContent = stripBom(fs.readFileSync(lockfilePath, 'utf8'));
+        lockfileRawContent = stripBom(await fs.readFile(lockfilePath, 'utf8'));
     } catch (err: any) {
-        // eslint-disable-line
-        if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+        if (!(util.types.isNativeError(err) && 'code' in err && err.code === 'ENOENT')) {
             throw err;
         }
         return {
@@ -57,25 +85,25 @@ function _read(
     let lockfile: Lockfile;
     let hadConflicts!: boolean;
     try {
-        lockfile = revertFromInlineSpecifiersFormatIfNecessary(
-            convertFromLockfileFileMutable(yaml.load(lockfileRawContent) as Lockfile)
-        );
+        lockfile = convertToLockfileObject(yaml.load(lockfileRawContent) as any); // eslint-disable-line
         hadConflicts = false;
-    } catch (err: any) {
-        // eslint-disable-line
+    } catch (err: unknown) {
         if (!opts.autofixMergeConflicts || !isDiff(lockfileRawContent)) {
             throw new PnpmError(
                 'BROKEN_LOCKFILE',
-                `The lockfile at "${lockfilePath}" is broken: ${err.message as string}`
+                `The lockfile at "${lockfilePath}" is broken: ${(err as Error).message}`
             );
         }
         hadConflicts = true;
-        lockfile = convertFromLockfileFileMutable(autofixMergeConflicts(lockfileRawContent));
-        logger.info(`Merge conflict detected in ${WANTED_LOCKFILE} and successfully merged`, prefix);
+        lockfile = autofixMergeConflicts(lockfileRawContent);
+        logger.info({
+            message: `Merge conflict detected in ${WANTED_LOCKFILE} and successfully merged`,
+            prefix
+        } as any);
     }
     if (lockfile) {
         const lockfileSemver = comverToSemver((lockfile.lockfileVersion ?? 0).toString());
-        /* eslint-enable @typescript-eslint/dot-notation */
+
         if (
             !opts.wantedVersions ||
             opts.wantedVersions.length === 0 ||
@@ -84,11 +112,12 @@ function _read(
                     return false;
                 }
                 if (lockfile.lockfileVersion !== '6.1' && semver.gt(lockfileSemver, comverToSemver(wantedVersion))) {
-                    logger.warn(
-                        `Your ${WANTED_LOCKFILE} was generated by a newer version of pnpm. ` +
+                    logger.warn({
+                        message:
+                            `Your ${WANTED_LOCKFILE} was generated by a newer version of pnpm. ` +
                             `It is a compatible version but it might get downgraded to version ${wantedVersion}`,
                         prefix
-                    );
+                    } as any);
                 }
                 return true;
             })
@@ -97,28 +126,70 @@ function _read(
         }
     }
     if (opts.ignoreIncompatible) {
-        logger.warn(`Ignoring not compatible lockfile at ${lockfilePath}`, prefix);
+        logger.warn({
+            message: `Ignoring not compatible lockfile at ${lockfilePath}`,
+            prefix
+        } as any);
         return { lockfile: null, hadConflicts: false };
     }
     throw new LockfileBreakingChangeError(lockfilePath);
 }
 
-function _readWantedLockfile(
+export function createLockfileObject(
+    importerIds: ProjectId[],
+    opts: {
+        lockfileVersion: string;
+        autoInstallPeers: boolean;
+        excludeLinksFromLockfile: boolean;
+        peersSuffixMaxLength: number;
+    }
+): Lockfile {
+    const importers: Lockfile['importers'] = {};
+    for (const importerId of importerIds) {
+        importers[importerId] = {
+            dependencies: {},
+            specifiers: {}
+        };
+    }
+    return {
+        importers,
+        lockfileVersion: opts.lockfileVersion || LOCKFILE_VERSION,
+        settings: {
+            autoInstallPeers: opts.autoInstallPeers,
+            excludeLinksFromLockfile: opts.excludeLinksFromLockfile,
+            peersSuffixMaxLength: opts.peersSuffixMaxLength
+        }
+    };
+}
+
+async function _readWantedLockfile(
     pkgPath: string,
     opts: {
         wantedVersions?: string[];
         ignoreIncompatible: boolean;
+        useGitBranchLockfile?: boolean;
+        mergeGitBranchLockfiles?: boolean;
+        autofixMergeConflicts?: boolean;
     }
-): {
+): Promise<{
     lockfile: Lockfile | null;
     hadConflicts: boolean;
-} {
+}> {
     const lockfileNames: string[] = [WANTED_LOCKFILE];
+    if (opts.useGitBranchLockfile) {
+        const gitBranchLockfileName: string = await getWantedLockfileName(opts);
+        if (gitBranchLockfileName !== WANTED_LOCKFILE) {
+            lockfileNames.unshift(gitBranchLockfileName);
+        }
+    }
     let result: { lockfile: Lockfile | null; hadConflicts: boolean } = { lockfile: null, hadConflicts: false };
     /* eslint-disable no-await-in-loop */
     for (const lockfileName of lockfileNames) {
-        result = _read(path.join(pkgPath, lockfileName), pkgPath, { ...opts, autofixMergeConflicts: true });
+        result = await _read(path.join(pkgPath, lockfileName), pkgPath, { ...opts, autofixMergeConflicts: true });
         if (result.lockfile) {
+            if (opts.mergeGitBranchLockfiles) {
+                result.lockfile = await _mergeGitBranchLockfiles(result.lockfile, pkgPath, pkgPath, opts);
+            }
             break;
         }
     }
@@ -126,26 +197,50 @@ function _readWantedLockfile(
     return result;
 }
 
-/**
- * Reverts changes from the "forceSharedFormat" write option if necessary.
- */
-function convertFromLockfileFileMutable(lockfileFile: LockfileFile): Lockfile {
-    if (typeof lockfileFile?.['importers'] === 'undefined') {
-        lockfileFile.importers = {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            '.': {
-                specifiers: lockfileFile['specifiers'] ?? {},
-                dependenciesMeta: lockfileFile['dependenciesMeta'],
-                publishDirectory: lockfileFile['publishDirectory']
-            }
-        };
-        delete lockfileFile.specifiers;
-        for (const depType of DEPENDENCIES_FIELDS) {
-            if (lockfileFile[depType] !== null) {
-                lockfileFile.importers['.'][depType] = lockfileFile[depType];
-                delete lockfileFile[depType];
-            }
-        }
+async function _mergeGitBranchLockfiles(
+    lockfile: Lockfile | null,
+    lockfileDir: string,
+    prefix: string,
+    opts: {
+        autofixMergeConflicts?: boolean;
+        wantedVersions?: string[];
+        ignoreIncompatible: boolean;
     }
-    return lockfileFile as Lockfile;
+): Promise<Lockfile | null> {
+    if (!lockfile) {
+        return lockfile;
+    }
+    const gitBranchLockfiles: Array<Lockfile | null> = (await _readGitBranchLockfiles(lockfileDir, prefix, opts)).map(
+        ({ lockfile }) => lockfile
+    );
+
+    let mergedLockfile: Lockfile = lockfile;
+
+    for (const gitBranchLockfile of gitBranchLockfiles) {
+        if (!gitBranchLockfile) {
+            continue;
+        }
+        mergedLockfile = mergeLockfileChanges(mergedLockfile, gitBranchLockfile);
+    }
+
+    return mergedLockfile;
+}
+
+async function _readGitBranchLockfiles(
+    lockfileDir: string,
+    prefix: string,
+    opts: {
+        autofixMergeConflicts?: boolean;
+        wantedVersions?: string[];
+        ignoreIncompatible: boolean;
+    }
+): Promise<
+    Array<{
+        lockfile: Lockfile | null;
+        hadConflicts: boolean;
+    }>
+> {
+    const files = await getGitBranchLockfileNames(lockfileDir);
+
+    return Promise.all(files.map((file: any) => _read(path.join(lockfileDir, file), prefix, opts)));
 }

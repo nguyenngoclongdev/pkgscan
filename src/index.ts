@@ -8,7 +8,7 @@ import { getPackageManager } from './utils/getPackageManager';
  * @returns An array of objects containing information about the installed package, or undefined if the package is not found.
  * @throws An error if the package name is null or empty, or if no package manager is detected.
  */
-export const getInstalledPackage = (packageName: string, cwd?: string): PackageInfo[] | undefined => {
+export const getInstalledPackage = async (packageName: string, cwd?: string): Promise<PackageInfo[] | undefined> => {
     if (!packageName) {
         throw Error('The package name provided is null or empty.');
     }
@@ -20,5 +20,5 @@ export const getInstalledPackage = (packageName: string, cwd?: string): PackageI
     }
 
     // Retrieve information about the installed package.
-    return packageManager.getInstalledPackage(packageName);
+    return await packageManager.getInstalledPackage(packageName);
 };
