@@ -2,7 +2,7 @@
     "name": "pkgscan",
     "displayName": "pkgscan - Installed Package Scan",
     "description": "Retrieve information on installed packages across npm, pnpm and yarn",
-    "version": "1.0.24",
+    "version": "1.0.25",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
