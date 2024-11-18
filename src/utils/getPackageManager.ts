@@ -1,5 +1,5 @@
 import { existsSync } from 'fs';
-import path from 'path/posix';
+import path from 'path';
 import { PackageManager } from '../package-manager/PackageManager';
 import { NpmModule } from '../package-manager/modules/npm';
 import { PnpmModule } from '../package-manager/modules/pnpm';
@@ -33,15 +33,15 @@ const getLockFile = (cwd: string): LockFileInfo | undefined => {
     // Return file path by priority
     const npmLockFile = path.join(cwd, lockFileNames.npm);
     if (existsSync(npmLockFile)) {
-        return { type: 'npm', path: cwd };
+        return { type: 'npm', path: npmLockFile };
     }
     const yarnLockFile = path.join(cwd, lockFileNames.yarn);
     if (existsSync(yarnLockFile)) {
-        return { type: 'yarn', path: cwd };
+        return { type: 'yarn', path: yarnLockFile };
     }
     const pnpmLockFile = path.join(cwd, lockFileNames.pnpm);
     if (existsSync(pnpmLockFile)) {
-        return { type: 'pnpm', path: cwd };
+        return { type: 'pnpm', path: pnpmLockFile };
     }
     return undefined;
 };
@@ -56,16 +56,15 @@ export const getPackageManager = (cwd: string): PackageManager | undefined => {
     switch (lockFile.type) {
         case 'npm': {
             rootPath = lockFile.path.replace(lockFileNames.npm, '');
-            break;
+            return new NpmModule(rootPath, lockFile.path);
         }
         case 'yarn': {
             rootPath = lockFile.path.replace(lockFileNames.yarn, '');
-            break;
+            return new YarnModule(rootPath, lockFile.path);
         }
         case 'pnpm': {
             rootPath = lockFile.path.replace(lockFileNames.pnpm, '');
-            break;
+            return new PnpmModule(rootPath, lockFile.path);
         }
     }
-    return new NpmModule(rootPath, lockFile.path);
 };

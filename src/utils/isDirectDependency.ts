@@ -1,10 +1,10 @@
 import { existsSync, readFileSync } from 'fs';
-import { posix } from 'path';
+import path from 'path';
 import semver from 'semver';
 
 let dependencies: Record<string, string> = {};
 export const isDirectDependency = (cwd: string, packageName: string, packageVersion: string): boolean => {
-    const packageJsonPath = posix.join(cwd, 'package.json');
+    const packageJsonPath = path.join(cwd, 'package.json');
     if (existsSync(packageJsonPath)) {
         const size = Object.keys(dependencies).length;
         if (size <= 0) {
