@@ -5,26 +5,67 @@ import { NpmModule } from '../package-manager/modules/npm';
 import { PnpmModule } from '../package-manager/modules/pnpm';
 import { YarnModule } from '../package-manager/modules/yarn';
 
-export const getPackageManager = (cwd: string): PackageManager | undefined => {
-    const npmLockFileName = 'package-lock.json';
-    const npmLockFile = cwd.endsWith(npmLockFileName) ? cwd : path.join(cwd, npmLockFileName);
+const lockFileNames = {
+    npm: 'package-lock.json',
+    yarn: 'yarn.lock',
+    pnpm: 'pnpm-lock.yaml'
+};
+
+type LockFileInfo = {
+    type: 'npm' | 'yarn' | 'pnpm';
+    path: string;
+};
+
+const getLockFile = (cwd: string): LockFileInfo | undefined => {
+    // Return direct link if set full file path
+    if (existsSync(cwd)) {
+        if (cwd.endsWith(lockFileNames.npm)) {
+            return { type: 'npm', path: cwd };
+        }
+        if (cwd.endsWith(lockFileNames.yarn)) {
+            return { type: 'yarn', path: cwd };
+        }
+        if (cwd.endsWith(lockFileNames.pnpm)) {
+            return { type: 'pnpm', path: cwd };
+        }
+    }
+
+    // Return file path by priority
+    const npmLockFile = path.join(cwd, lockFileNames.npm);
     if (existsSync(npmLockFile)) {
-        const rootPath = cwd.endsWith(npmLockFileName) ? cwd.replace(npmLockFileName, '') : cwd;
-        return new NpmModule(rootPath, npmLockFile);
+        return { type: 'npm', path: cwd };
     }
-
-    const pnpmLockFileName = 'pnpm-lock.yaml';
-    const pnpmLockFile = cwd.endsWith(pnpmLockFileName) ? cwd : path.join(cwd, pnpmLockFileName);
-    if (existsSync(pnpmLockFile)) {
-        const rootPath = cwd.endsWith(pnpmLockFileName) ? cwd.replace(pnpmLockFileName, '') : cwd;
-        return new PnpmModule(rootPath, pnpmLockFile);
-    }
-
-    const yarnLockFileName = 'yarn.lock';
-    const yarnLockFile = cwd.endsWith(yarnLockFileName) ? cwd : path.join(cwd, yarnLockFileName);
+    const yarnLockFile = path.join(cwd, lockFileNames.yarn);
     if (existsSync(yarnLockFile)) {
-        const rootPath = cwd.endsWith(yarnLockFileName) ? cwd.replace(yarnLockFileName, '') : cwd;
-        return new YarnModule(rootPath, yarnLockFile);
+        return { type: 'yarn', path: cwd };
+    }
+    const pnpmLockFile = path.join(cwd, lockFileNames.pnpm);
+    if (existsSync(pnpmLockFile)) {
+        return { type: 'pnpm', path: cwd };
     }
     return undefined;
+};
+
+export const getPackageManager = (cwd: string): PackageManager | undefined => {
+    const lockFile = getLockFile(cwd);
+    if (!lockFile) {
+        return undefined;
+    }
+
+    let rootPath = '';
+    switch (lockFile.type) {
+        case 'npm': {
+            rootPath = lockFile.path.replace(lockFileNames.npm, '');
+            break;
+        }
+        case 'yarn': {
+            rootPath = lockFile.path.replace(lockFileNames.yarn, '');
+            break;
+        }
+        case 'pnpm': {
+            rootPath = lockFile.path.replace(lockFileNames.pnpm, '');
+            break;
+        }
+    }
+    return new NpmModule(rootPath, lockFile.path);
 };
