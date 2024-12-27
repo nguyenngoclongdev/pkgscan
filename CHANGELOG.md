@@ -1,5 +1,11 @@
 # @vscode-utility/fs-browserify
 
+## 1.0.25
+
+### Patch Changes
+
+- 7c43264: fix: detect the package manager
+
 ## 1.0.24
 
 ### Patch Changes
